@@ -26,6 +26,6 @@ class Deck
   end
 
   def shuffle!
-    self.cards.shuffle!
+    self.cards.shuffle!(rand(3..5))
   end
 end
