@@ -1,10 +1,9 @@
 class Table
-  attr_accessor :players
+  attr_accessor :players, :bank
 
-  @players = []
-  @bank = 0
-
-  def calc
+  def initialize
+    @players = []
+    @bank = Bank.new
   end
 
   def show_cards (cards)
@@ -20,8 +19,19 @@ class Table
       puts
     end
   end
-          
 
+  def score(player)
+    p "Score Player #{player.name}: [#{player.calc_cards}]"
+  end 
+
+  def bank_main
+    p "Bank = #{bank.on_play}"
+  end 
+
+  def bank_player(player)
+    p "Bank player #{player.name}: player.bank"
+  end
+        
   def prn_face
     s1 = " ----- "
     s2 = "" 
@@ -31,11 +41,11 @@ class Table
     side = [s1, s2, s3, s4, s5]
   end
   def prn_shirt
-      s1 = " ----- "
-      s2 = "|\u0e4f \u0e4f \u0e4f|"
-      s3 = "|\u0e4f \u0e4f \u0e4f|"
-      s4 = "|\u0e4f \u0e4f \u0e4f|"
-      s5 = " ----- "
-      side = [s1, s2, s3, s4, s5]
+    s1 = " ----- "
+    s2 = "|\u0e4f \u0e4f \u0e4f|"
+    s3 = "|\u0e4f \u0e4f \u0e4f|"
+    s4 = "|\u0e4f \u0e4f \u0e4f|"
+    s5 = " ----- "
+    side = [s1, s2, s3, s4, s5]
   end
 end
