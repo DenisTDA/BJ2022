@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Card
   attr_accessor :suit, :rank, :value, :status
 
@@ -5,18 +7,18 @@ class Card
     @suit = suit
     @rank = rank
     @value = value
-    status = OPEN
+    @status = false
   end
 
-  def open?
+  def opened
+    self.status = true
+  end
+
+  def closed
+    self.status = false
+  end
+
+  def opened?
     status
   end
-  
-  def close?
-    !status 
-  end
-
-  protected
-  OPEN = true
-  HIDDEN = false
 end

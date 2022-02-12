@@ -1,5 +1,6 @@
-class Bank
+# frozen_string_literal: true
 
+class Bank
   EMPTY = 0
 
   def initialize
@@ -11,21 +12,18 @@ class Bank
   end
 
   def on_play
-    slef.bank
-  end
-
-  def for_win
     self.bank
   end
 
   def draw(count_players)
-    slef.bank / count_players
+    self.bank / count_players
   end
 
-  def reset 
+  def reset
     self.bank = EMPTY
   end
 
   protected
+
   attr_accessor :bank
 end
