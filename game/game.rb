@@ -5,6 +5,7 @@ class Game
 
   BJ = 21
   FORMAT_NAME = /[a-zа-я]{3,}/i.freeze
+  BANK = 100
 
   validate :name, :format, FORMAT_NAME
 
@@ -90,13 +91,16 @@ class Game
   def end_game?
     return unless table.players.last.bank.zero? || table.players.first.bank.zero?
 
-    if table.players.firs.bank.zero?
+    if table.players.first.bank.zero?
       puts "The game is over!! player #{table.players.last.name} WIN!!"
     elsif table.players.last.bank.zero?
       puts "The game is over!! player #{table.players.first.name} WIN!!"
     end
-    puts "Play again? (fo play - 'y', for exit - 0 )"
+    puts "Play again? (for play - 'y', for exit - 0 )"
     self.menu = %w[y 0]
+    reset_all
+    table.players.first.bank = BANK
+    table.players.last.bank = BANK
     choice_player
   end
 
@@ -105,15 +109,19 @@ class Game
     calc_score
     puts "For next round - Enter,\t For exit - 0"
     exit if gets.chomp == '0'
-    table.bank.reset
-    table.players.first.cards_reset
-    table.players.last.cards_reset
-    table.new_deck
+    reset_all
   end
 
   protected
 
   attr_accessor :table, :players, :menu
+
+  def reset_all
+    table.bank.reset
+    table.players.first.cards_reset
+    table.players.last.cards_reset
+    table.new_deck
+  end
 
   def create_bot
     name = 'IBM'
@@ -172,7 +180,7 @@ class Game
       retry
     end
     puts "Choice - #{choice}"
-    choice.to_i.zero? ? exit : choice
+    choice == '0' ? exit : choice
   end
 
   def view_part_table(player)
