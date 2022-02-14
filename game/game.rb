@@ -13,12 +13,9 @@ class Game
     @table = Table.new
   end
 
-  def wellcome
-    system('clear')
-    puts 'Begin the game Blac Jack (in the reduction of Thinknetica!)'
+  def init_players
     create_bot
     begin
-      print 'Enter your name: '
       @name = gets.chomp.downcase.capitalize!
       raise unless valid?
     rescue StandardError
@@ -29,92 +26,106 @@ class Game
     table.add_player(player)
   end
 
-  def first_round
+  def initial_round
     table.deal_cards
     table.make_bids
     redraw
-    self.menu = %w[1 2 3 0]
-    puts "Your choice: \t1.Take a card\t 2.Pass\t 3.Open cards\t 0.Exit"
-    print "Choice of player #{table.players.last.name} : "
-    case choice_player
-    when menu[0]
+  end
+
+  def choice_take(player)
+    table.players.first.take_card(table.deck.cards.pop) if player == :player_1
+    if player == :player_2
       table.players.last.take_card(table.deck.cards.pop)
       table.players.last.open_cards
       redraw
-    when menu[1]
-      table.players.last.pass
-    when menu[2]
-      table.players.first.open_cards
-      redraw
-      return false
-    when menu[3]
-      exit
     end
     sleep 2
   end
 
-  def second_round
-    system('clear')
-    ibm = table.players.first
-    puts "#{ibm.name} made a choice.."
-    puts ibm.make_choice
-    case ibm.make_choice
-    when 'take card'
-      table.players.first.take_card(table.deck.cards.pop)
-    when 'pass'
-      table.players.first.pass
-    end
+  def choice_pass(player)
+    table.players.last.pass if player == :player_2
+    table.players.first.pass if player == :player_1
     sleep 2
   end
 
-  def third_round
+  def choice_open(_player)
+    table.players.first.open_cards
+    redraw
+    sleep 2
+    SKIP_SECOND_ROUND
+  end
+
+  def name_player_2
+    table.players.last.name
+  end
+
+  def name_player_1
+    table.players.first.name
+  end
+
+  def choice_ibm
+    table.players.first.make_choice
+  end
+
+  def choice_player(menu)
+    begin
+      choice = gets.chomp
+      raise unless menu.include?(choice)
+    rescue StandardError
+      puts 'Incorrect input! Try again.'
+      retry
+    end
+    puts "Choice - #{choice}"
+    choice.eql?('0') ? exit : choice
+  end
+
+  def show_fild
+    draw_fild
+  end
+
+  def opening_up?
     if table.players.last.cards.size > 2
       table.players.first.open_cards
+      false
     else
-      draw_fild
-      self.menu = %w[1 3 0]
-      puts "Your choice: \t1.Take a card\t 3.Open cards\t  0.Exit"
-      print "Choice of player #{table.players.last.name} : "
-      case choice_player
-      when menu[0]
-        table.players.last.take_card(table.deck.cards.pop)
-        table.players.first.open_cards
-        draw_fild
-      when menu[1]
-        table.players.first.open_cards
-      when menu[2]
-        exit
-      end
+      true
     end
   end
 
-  def end_game?
-    return unless table.players.last.bank.zero? || table.players.first.bank.zero?
-
+  def name_winer
     if table.players.first.bank.zero?
-      puts "The game is over!! player #{table.players.last.name} WIN!!"
+      name = table.players.last.name
     elsif table.players.last.bank.zero?
-      puts "The game is over!! player #{table.players.first.name} WIN!!"
+      name = table.players.first.name
     end
-    puts "Play again? (for play - 'y', for exit - 0 )"
+    name
+  end
+
+  def new_game?
     self.menu = %w[y 0]
     reset_all
     table.players.first.bank = BANK
     table.players.last.bank = BANK
-    choice_player
+    choice_player(menu)
   end
 
-  def end_game_round
+  def final_score
+    table.players.first.open_cards
     redraw
     calc_score
-    puts "For next round - Enter,\t For exit - 0"
+  end
+
+  def finish?
     exit if gets.chomp == '0'
     reset_all
+    table.players.last.bank.zero? || table.players.first.bank.zero?
   end
 
   protected
 
   attr_accessor :table, :players, :menu
+
+  SKIP_SECOND_ROUND = false
 
   def reset_all
     table.bank.reset
@@ -169,18 +180,6 @@ class Game
         players.first.take_bank(table.bank.on_play)
       end
     end
-  end
-
-  def choice_player
-    begin
-      choice = gets.chomp
-      raise unless menu.include?(choice)
-    rescue StandardError
-      puts 'Incorrect input! Try again.'
-      retry
-    end
-    puts "Choice - #{choice}"
-    choice == '0' ? exit : choice
   end
 
   def view_part_table(player)

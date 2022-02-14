@@ -8,17 +8,11 @@ require_relative 'ai'
 require_relative 'bank'
 require_relative 'table'
 require_relative 'game'
+require_relative 'interface'
 
-game = Game.new
-def init_game(game)
-  game.wellcome
-  loop do
-    if game.first_round
-      game.second_round
-      game.third_round
-    end
-    game.end_game_round
-    game.end_game?
-  end
+interface = Interface.new
+interface.wellcome
+loop do
+  interface.third_round if interface.first_round && interface.second_round
+  interface.new_game? if interface.continue_game?
 end
-init_game(game)

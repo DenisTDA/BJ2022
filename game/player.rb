@@ -46,12 +46,13 @@ class Player
 
   def calc_cards
     summ = 0
-    cards.each do |card|
-      summ += if card.value == T
-                (summ + T) <= BJ ? T : T_1
-              else
-                card.value
-              end
+    values = []
+    cards.each { |card| values << card.value }
+    values.sort.each do |value|
+      if value == T
+        value = (summ + T) <= BJ ? T : T_1
+      end
+      summ += value
     end
     summ
   end

@@ -8,7 +8,7 @@ class Ai < Player
   validate :hold, :format, FORMAT_HOLD
 
   def make_choice
-    return 'take card' if calc_cards < hold
-    return 'pass' if calc_cards >= hold
+    return :choice_take if calc_cards < hold
+    return :choice_pass if calc_cards >= hold
   end
 end
